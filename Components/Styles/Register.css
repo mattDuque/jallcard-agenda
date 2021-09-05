@@ -1,0 +1,39 @@
+.register {
+  background: #f8f8f8;
+  height: 100vw;
+}
+
+.register__container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.register__content {
+  padding: 100px;
+  text-align: center;
+  background: white;
+}
+
+.register__field {
+  display: block !important;
+  margin: 15px !important;
+}
+
+.register__content > button {
+  text-transform: inherit !important;
+  background: #5193f1 !important;
+  color: white;
+  margin: 20px 10px 5px 10px;
+}
+
+@media screen and (max-width: 992px) {
+  .register__container {
+    width: 90%;
+  }
+
+  .register__field {
+    margin: 15px 10px 0 0 !important;
+  }
+}

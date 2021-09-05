@@ -1,0 +1,55 @@
+.login {
+  background: #f8f8f8;
+}
+
+.login__container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.login__content {
+  padding: 100px;
+  text-align: center;
+  background: white;
+}
+
+.login__logo {
+  font-size: 7em !important;
+  color: #1a73e8;
+}
+
+.login__email {
+  margin: 15px 10px 0 0 !important;
+}
+
+.login__password {
+  margin: 15px 0 0 10px !important;
+}
+
+.login__content > button {
+  text-transform: inherit !important;
+  background: #5193f1 !important;
+  color: white;
+  margin: 20px 10px 5px 10px;
+  min-width: 150px;
+}
+
+.login__content > p {
+  cursor: pointer;
+}
+
+@media screen and (max-width: 992px) {
+  .login__container {
+    width: 90%;
+  }
+
+  .login__email {
+    margin: 15px 10px 0 0 !important;
+  }
+
+  .login__password {
+    margin: 15px 10px 0 0 !important;
+  }
+}
