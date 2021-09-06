@@ -1,9 +1,13 @@
 import React from 'react'
+import './Styles/ContactInfo.css'
 
 function ContactInfo() {
     return (
-        <div>
-            <h1>Info</h1>
+        <div className="contactInfo__container">
+            <div className="contactInfo__content">
+                <h4>Detalhes do contato</h4>
+
+            </div>
         </div>
     )
 }

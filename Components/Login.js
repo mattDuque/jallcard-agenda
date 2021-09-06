@@ -24,7 +24,6 @@ function Login() {
     const signInPopup = () => {
         signInWithPopup(auth, provider)
             .then((result) => {
-                console.log(result)
                 dispatch({
                     type: actionTypes.SET_USER,
                     user: result.user
@@ -38,7 +37,6 @@ function Login() {
     const signInEmail = () => {
         signInWithEmailAndPassword(auth, email, password)
             .then((result) => {
-                console.log(result)
                 dispatch({
                     type: actionTypes.SET_USER,
                     user: result.user
@@ -79,13 +77,13 @@ function Login() {
                                 />
                             </FormControl>
                         </form>
-                        <Button onClick={signInPopup}>Entrar com Google</Button>
-                        <Button onClick={signInEmail}>Entrar com Email</Button>
+                        <Button className="login__button" onClick={signInPopup}>Entrar com Google</Button>
+                        <Button className="login__button" onClick={signInEmail}>Entrar com Email</Button>
                         <p onClick={() => { setShowRegister(true) }}>criar conta</p>
                     </CardContent>
                 </Card>
             ) : (
-                <Register showRegister={showRegister} onChange={handleChange} />
+                <Register onChange={handleChange} />
             )}
 
         </div>

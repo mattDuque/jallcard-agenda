@@ -1,24 +1,21 @@
-.register {
+.contactEdit {
   background: #f8f8f8;
-  height: 100vw;
+  width: fit-content;
 }
 
-.register__container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.register__content {
-  padding: 100px;
+.contactEdit__content {
+  padding: 30px 80px;
   text-align: center;
   background: white;
 }
 
-.register__field {
+.contactEdit__field {
   display: block !important;
   margin: 15px !important;
+}
+
+.MuiOutlinedInput-root {
+  width: 100%;
 }
 
 form > button {
@@ -29,11 +26,11 @@ form > button {
 }
 
 @media screen and (max-width: 992px) {
-  .register__container {
+  .contactEdit__container {
     width: 90%;
   }
 
-  .register__field {
+  .contactEdit__field {
     margin: 15px 10px 0 0 !important;
   }
 }

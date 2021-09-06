@@ -6,30 +6,37 @@ import {
 import { auth, createUserWithEmailAndPassword } from '../firebase'
 import { useStateValue } from '../StateProvider'
 import { actionTypes } from '../reducer'
+import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
 import './Styles/Register.css'
+
+const registerSchema = yup.object().shape({
+    userEmail: yup.string().email().required('Email deve ser válido'),
+    password: yup.string().min(8).max(30).required(),
+    passwordConfirm: yup.string().oneOf([yup.ref("password"), null]).required(),
+})
 
 function Regsiter(props) {
 
     const [state, dispatch] = useStateValue()
-    const [email, setEmail] = useState()
-    const [password, setPassword] = useState()
-    const [passwordConfirm, setPasswordConfirm] = useState()
-    const [passwordCheck, setPasswordCheck] = useState()
+    const { register, handleSubmit, formState: { errors } } = useForm({
+        resolver: yupResolver(registerSchema)
+    });
 
-    function handleSubmit(e) {
-        e.preventDefault()
-        createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
+    function onSubmit(data) {
+        createUserWithEmailAndPassword(auth, data.userEmail, data.password)
+            .then((result) => {
                 dispatch({
                     type: actionTypes.SET_USER,
-                    user: user
+                    user: result.user
                 })
                 props.onChange(false)
             })
             .catch((error) => {
                 alert(error)
             });
+
     }
 
     return (
@@ -37,35 +44,41 @@ function Regsiter(props) {
             <Card className="register__container">
                 <CardContent className="register__content">
                     <p>Crie sua conta</p>
-                    <form>
+                    <form onSubmit={handleSubmit(onSubmit)}>
                         <FormControl className="register__field">
                             <TextField
-                                onChange={(e) => setEmail(e.target.value)}
-                                id="user-email"
+                                {...register("userEmail")}
+                                name="userEmail"
                                 label="Email"
                                 variant="outlined"
+                                error={errors.userEmail?.message}
+                                helperText={errors.userEmail?.message && "Email deve ser válido"}
                             />
                         </FormControl>
                         <FormControl className="register__field">
                             <TextField
-                                onChange={(e) => setPassword(e.target.value)}
-                                id="password"
-                                label="Senha"
+                                {...register("password")}
+                                name="password"
                                 variant="outlined"
                                 type="password"
+                                label="Senha"
+                                error={errors.password?.message}
+                                helperText={errors.password?.message && "Senha deve ter no mínimo 8 caracteres"}
                             />
                         </FormControl>
                         <FormControl className="register__field">
                             <TextField
-                                onChange={(e) => setPasswordConfirm(e.target.value)}
-                                id="password-confirm"
+                                {...register("passwordConfirm")}
+                                name="passwordConfirm"
                                 label="Confirme a senha"
                                 variant="outlined"
                                 type="password"
+                                error={errors.passwordConfirm?.message}
+                                helperText={errors.passwordConfirm?.message && "Senhas devem ser identicas"}
                             />
                         </FormControl>
+                        <Button type="submit" id="submit">Registrar</Button>
                     </form>
-                    <Button disabled={passwordCheck} onClick={handleSubmit}>Registrar</Button>
                 </CardContent>
             </Card>
         </div>

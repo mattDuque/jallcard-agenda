@@ -1,0 +1,65 @@
+.contactCreate__header {
+  height: 200px;
+  background-color: #131921;
+  margin: auto;
+  height: 150px;
+  padding: 20px 0;
+  border-bottom: 1px solid lightgrey;
+}
+
+.contactCreate__back {
+  width: auto;
+  height: 100%;
+  float: left;
+}
+
+.contactCreate__picture {
+  float: left;
+  height: 100%;
+  width: 150px;
+  background-color: #bbb;
+  border-radius: 50%;
+  background: green;
+}
+
+.contactCreate__picture > span {
+  height: 85%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8em;
+}
+
+.contactCreate__content {
+  padding: 30px 80px;
+  text-align: center;
+  background: white;
+  width: fit-content;
+}
+
+.contactCreate__field {
+  display: block !important;
+  margin: 15px !important;
+}
+
+.MuiOutlinedInput-root {
+  width: 100%;
+}
+
+form > button {
+  text-transform: inherit !important;
+  background: #5193f1 !important;
+  color: white !important;
+  margin: 20px 10px 5px 10px;
+}
+
+@media screen and (max-width: 992px) {
+  .contactCreate__container {
+    width: 90%;
+  }
+
+  .contactCreate__field {
+    margin: 15px 10px 0 0 !important;
+  }
+}
