@@ -1,57 +1,69 @@
 import React, { useState } from 'react'
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import ContactInfo from './ContactInfo';
-import ContactEdit from './ContactEdit';
-import { Link, useHistory, useParams } from 'react-router-dom'
 import {
     IconButton, Button,
     Dialog, DialogActions,
     DialogTitle
 } from '@material-ui/core';
+import { Link, useHistory, useParams } from 'react-router-dom'
+import { useStateValue } from '../StateProvider'
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ContactInfo from './ContactInfo';
+import ContactEdit from './ContactEdit';
+import axios from '../axios'
 import './Styles/Contact.css'
 
-function Contact() {
+function Contact(props) {
 
     const history = useHistory()
     const { contactId } = useParams()
+    const [{ user }] = useStateValue()
     const [editMode, setEditMode] = useState(false)
-    const [saveDialogOpen, setSaveDialogOpen] = useState(false)
+    const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
     const [buttonText, setButtonText] = useState("Editar")
 
-    const handleClickEdit = () => {
+    const currentContact = props.data?.find(obj => obj._id === contactId)
 
+    const handleClickEdit = () => {
         if (editMode) {
-            setSaveDialogOpen(true)
+            setCancelDialogOpen(true)
         } else {
             setEditMode(true)
             setButtonText("Cancelar")
         }
     }
 
-    const handleSave = (arg) => {
+    const handleEdit = (arg) => {
         if (arg) {
-            setSaveDialogOpen(false)
+            setCancelDialogOpen(false)
             setButtonText("Editar")
             setEditMode(false)
         } else {
-            setSaveDialogOpen(false)
+            setCancelDialogOpen(false)
         }
     }
 
     const handleDelete = (arg) => {
         if (arg) {
+            axios.delete('/contacts/delete', {
+                headers: {
+                    id: currentContact._id,
+                    user: user.email,
+                    token: user.accessToken,
+                }
+            }).catch(response => console.log(response))
             setDeleteDialogOpen(false)
+            props.onChange()
             history.push('/')
-            /* remove from db*/
         } else {
             setDeleteDialogOpen(false)
         }
     }
 
-    const handleChange = (newValue) => {
+    const handleSave = (newValue) => {
         setEditMode(newValue)
         setButtonText("Editar")
+        props.onChange()
     }
 
     return (
@@ -63,9 +75,9 @@ function Contact() {
                     </div>
                 </Link>
                 <div className="contact__picture">
-                    <span>A</span>
+                    <span>{currentContact?.name.charAt(0)}</span>
                 </div>
-                <div className="contact__name"><span>name</span></div>
+                <div className="contact__name"><span>{currentContact?.name}</span></div>
                 <div className="contact__options">
                     <Button
                         className="contact__button"
@@ -74,7 +86,7 @@ function Contact() {
                     </Button>
                     <Button
                         className="contact__button"
-                        onClick={() => { setDeleteDialogOpen(true) }}
+                        onClick={() => setDeleteDialogOpen(true)}
                     >Deletar
                     </Button>
                 </div>
@@ -82,34 +94,34 @@ function Contact() {
             <div className="contact__body">
                 {editMode ? (
                     <>
-                        <Dialog open={saveDialogOpen}>
+                        <Dialog open={cancelDialogOpen}>
                             <DialogTitle>
                                 Desacartar mudanças?
                             </DialogTitle>
                             <DialogActions>
-                                <Button onClick={() => { handleSave(false) }} color="primary">
+                                <Button onClick={() => { handleEdit(false) }} color="primary">
                                     Não
                                 </Button>
-                                <Button onClick={() => { handleSave(true) }} color="primary" autoFocus>
+                                <Button onClick={() => { handleEdit(true) }} color="primary" autoFocus>
                                     Sim
                                 </Button>
                             </DialogActions>
                         </Dialog>
-                        <ContactEdit onChange={handleChange} />
+                        <ContactEdit onChange={handleSave} data={currentContact} />
                     </>
 
                 ) : (
-                    <ContactInfo />
+                    <ContactInfo data={currentContact} />
                 )}
                 <Dialog open={deleteDialogOpen}>
                     <DialogTitle>
                         Dejeasa deletar contato?
                     </DialogTitle>
                     <DialogActions>
-                        <Button onClick={() => { handleDelete(false) }} color="primary">
+                        <Button onClick={() => handleDelete(false)} color="primary" autoFocus>
                             Não
                         </Button>
-                        <Button onClick={() => { handleDelete(true) }} color="primary" autoFocus>
+                        <Button onClick={() => handleDelete(true)} color="primary" >
                             Sim
                         </Button>
                     </DialogActions>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
     Card, CardContent, TextField,
     Button, FormControl
@@ -77,6 +77,7 @@ function Regsiter(props) {
                                 helperText={errors.passwordConfirm?.message && "Senhas devem ser identicas"}
                             />
                         </FormControl>
+                        <Button onClick={() => props.onChange(false)}>Voltar</Button>
                         <Button type="submit" id="submit">Registrar</Button>
                     </form>
                 </CardContent>

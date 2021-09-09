@@ -1,24 +1,30 @@
 import React from 'react'
 import {
-    TextField, Button,
+    TextField, Button, IconButton,
     FormControl, InputLabel,
     Select, MenuItem
 } from '@material-ui/core'
-import MaskedInput from 'react-text-mask';
-import PropTypes from "prop-types";
+import { useStateValue } from '../StateProvider'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { Link, useHistory } from 'react-router-dom'
+import ArrowBackIcon from '@material-ui/icons/ArrowBack'
+import MaskedInput from 'react-text-mask'
+import PropTypes from "prop-types"
+import axios from '../axios'
 import * as yup from 'yup'
-import './Styles/ContactEdit.css'
+import './Styles/ContactCreate.css'
 
 const schema = yup.object().shape({
     name: yup.string().required(),
     lastName: yup.string().required(),
     phone: yup.string().min(11).required(),
+    phone2: yup.string(),
     birthdate: yup.string().min(8).required(),
-    relative: yup.number().integer().nullable(true)
+    relative: yup.string()
 })
 function PhoneMask(props) {
+
     const { inputRef, ...other } = props;
 
     return (
@@ -35,6 +41,7 @@ function PhoneMask(props) {
     );
 }
 function BirthdateMask(props) {
+
     const { inputRef, ...other } = props;
 
     return (
@@ -59,9 +66,11 @@ PhoneMask.propTypes = {
     inputRef: PropTypes.func.isRequired
 };
 
-function ContactEdit(props) {
+function ContactCreate(props) {
 
-    const [relative, setRelative] = React.useState(0);
+    const history = useHistory()
+    const [{ user }] = useStateValue()
+    const [relative, setRelative] = React.useState('Nenhum');
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(schema)
     });
@@ -70,16 +79,35 @@ function ContactEdit(props) {
         setRelative(event.target.value);
     };
 
-    const onSubmit = (e) => {
-        console.log(e)
-        props.onChange(false)
+    const onSubmit = (data) => {
+        axios.post('/contact/create', {
+            user: user.email,
+            data: data,
+            token: user.accessToken
+        })
+            .then(response => {
+                console.log(response)
+            })
+        props.onChange()
+        history.push('/')
     }
 
     return (
-        <div className="contactEdit">
-            <div className="contactEdit__content">
+        <div className="contactCreate">
+            <div className="contactCreate__header">
+                <Link to="/">
+                    <div className="contactCreate__back">
+                        <IconButton><ArrowBackIcon /></IconButton>
+                    </div>
+                </Link>
+                <div className="contactCreate__picture">
+                    <span></span>
+                </div>
+            </div>
+            <div className="contactCreate__content">
+
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <FormControl className="contactEdit__field">
+                    <FormControl className="contactCreate__field">
                         <TextField
                             {...register("name")}
                             name="name"
@@ -89,7 +117,7 @@ function ContactEdit(props) {
                             helperText={errors.name?.message && "Nome é obrigatório"}
                         />
                     </FormControl>
-                    <FormControl className="contactEdit__field">
+                    <FormControl className="contactCreate__field">
                         <TextField
                             {...register("lastName")}
                             name="lastName"
@@ -99,7 +127,7 @@ function ContactEdit(props) {
                             helperText={errors.lastName?.message && "Sobrenome é obrigatório"}
                         />
                     </FormControl>
-                    <FormControl className="contactEdit__field">
+                    <FormControl className="contactCreate__field">
                         <TextField
                             {...register("birthdate")}
                             name="birthdate"
@@ -112,7 +140,7 @@ function ContactEdit(props) {
                             }}
                         />
                     </FormControl>
-                    <FormControl className="contactEdit__field">
+                    <FormControl className="contactCreate__field">
                         <TextField
                             {...register("phone")}
                             name="phone"
@@ -125,7 +153,20 @@ function ContactEdit(props) {
                             }}
                         />
                     </FormControl>
-                    <FormControl className="contactEdit__field">
+                    <FormControl className="contactCreate__field">
+                        <TextField
+                            {...register("phone2")}
+                            name="phone2"
+                            label="2º Telefone"
+                            variant="outlined"
+                            error={errors.phone2?.message}
+                            helperText={errors.phone2?.message}
+                            InputProps={{
+                                inputComponent: PhoneMask
+                            }}
+                        />
+                    </FormControl>
+                    <FormControl className="contactCreate__field">
                         <InputLabel className="MuiInputLabel-outlined">Parentesco</InputLabel>
                         <Select
                             {...register("relative")}
@@ -135,13 +176,13 @@ function ContactEdit(props) {
                             value={relative}
                             onChange={handleChange}
                         >
-                            <MenuItem value={0}>Nenhum</MenuItem>
-                            <MenuItem value={1}>Pai</MenuItem>
-                            <MenuItem value={2}>Mãe</MenuItem>
-                            <MenuItem value={3}>Tio(a)</MenuItem>
-                            <MenuItem value={4}>Irmã(o)</MenuItem>
-                            <MenuItem value={5}>Avós</MenuItem>
-                            <MenuItem value={6}>Outro</MenuItem>
+                            <MenuItem value={"Nenhum"}>Nenhum</MenuItem>
+                            <MenuItem value={"Pai"}>Pai</MenuItem>
+                            <MenuItem value={"Mãe"}>Mãe</MenuItem>
+                            <MenuItem value={"Tio(a)"}>Tio(a)</MenuItem>
+                            <MenuItem value={"Irmã(o)"}>Irmã(o)</MenuItem>
+                            <MenuItem value={"Avós"}>Avós</MenuItem>
+                            <MenuItem value={"Outro"}>Outro</MenuItem>
                         </Select>
 
                     </FormControl>
@@ -152,4 +193,4 @@ function ContactEdit(props) {
     )
 }
 
-export default ContactEdit
+export default ContactCreate

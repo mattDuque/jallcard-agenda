@@ -1,26 +1,28 @@
 import React from 'react'
 import {
-    TextField, Button, IconButton,
+    TextField, Button,
     FormControl, InputLabel,
     Select, MenuItem
 } from '@material-ui/core'
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import MaskedInput from 'react-text-mask';
-import PropTypes from "prop-types";
+import { useStateValue } from '../StateProvider'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Link, useHistory } from 'react-router-dom'
+import MaskedInput from 'react-text-mask'
+import PropTypes from "prop-types"
+import axios from '../axios'
 import * as yup from 'yup'
-import './Styles/ContactCreate.css'
+import './Styles/ContactEdit.css'
 
 const schema = yup.object().shape({
     name: yup.string().required(),
     lastName: yup.string().required(),
     phone: yup.string().min(11).required(),
+    phone2: yup.string(),
     birthdate: yup.string().min(8).required(),
-    relative: yup.number().integer().nullable(true)
+    relative: yup.string()
 })
 function PhoneMask(props) {
+
     const { inputRef, ...other } = props;
 
     return (
@@ -37,6 +39,7 @@ function PhoneMask(props) {
     );
 }
 function BirthdateMask(props) {
+
     const { inputRef, ...other } = props;
 
     return (
@@ -61,65 +64,88 @@ PhoneMask.propTypes = {
     inputRef: PropTypes.func.isRequired
 };
 
-function ContactCreate(props) {
+function ContactEdit(props) {
 
-    const history = useHistory()
-    const [relative, setRelative] = React.useState(0);
+    const [{ user }] = useStateValue()
+    const [name, setName] = React.useState(props.data?.name);
+    const [lastName, setLastName] = React.useState(props.data?.lastName);
+    const [birthdate, setBirthdate] = React.useState(props.data?.birthdate);
+    const [phone, setPhone] = React.useState(props.data?.phone);
+    const [phone2, setPhone2] = React.useState(props.data?.phone2);
+    const [relative, setRelative] = React.useState(props.data?.relative);
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(schema)
     });
 
     const handleChange = (event) => {
-        setRelative(event.target.value);
-    };
+        switch (event.target.name) {
+            case "name":
+                return setName(event.target.value);
+            case "lastName":
+                return setLastName(event.target.value);
+            case "birthdate":
+                return setBirthdate(event.target.value);
+            case "phone":
+                return setPhone(event.target.value);
+            case "phone2":
+                return setPhone2(event.target.value);
+            case "relative":
+                return setRelative(event.target.value);
+            default:
+                return 0
 
-    const onSubmit = (e) => {
-        console.log(e)
-        /*props.onChange(false)*/
-        history.push('/')
+        }
+    }
+    const onSubmit = (data) => {
+
+        axios.put('/contacts/update', {
+            id: props.data._id,
+            user: user.email,
+            data: data,
+            token: user.accessToken
+        })
+            .catch(response => {
+                console.log(response)
+            })
+        props.onChange(false)
     }
 
     return (
-        <div className="contactCreate">
-            <div className="contactCreate__header">
-                <Link to="/">
-                    <div className="contactCreate__back">
-                        <IconButton><ArrowBackIcon /></IconButton>
-                    </div>
-                </Link>
-                <div className="contactCreate__picture">
-                    <span></span>
-                </div>
-            </div>
-            <div className="contactCreate__content">
-
+        <div className="contactEdit">
+            <div className="contactEdit__content">
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <FormControl className="contactCreate__field">
+                    <FormControl className="contactEdit__field">
                         <TextField
                             {...register("name")}
                             name="name"
                             label="Nome"
                             variant="outlined"
+                            value={name}
+                            onChange={handleChange}
                             error={errors.name?.message}
                             helperText={errors.name?.message && "Nome é obrigatório"}
                         />
                     </FormControl>
-                    <FormControl className="contactCreate__field">
+                    <FormControl className="contactEdit__field">
                         <TextField
                             {...register("lastName")}
                             name="lastName"
                             label="Sobrenome"
                             variant="outlined"
+                            value={lastName}
+                            onChange={handleChange}
                             error={errors.lastName?.message}
                             helperText={errors.lastName?.message && "Sobrenome é obrigatório"}
                         />
                     </FormControl>
-                    <FormControl className="contactCreate__field">
+                    <FormControl className="contactEdit__field">
                         <TextField
                             {...register("birthdate")}
                             name="birthdate"
                             label="Data de nascimento"
                             variant="outlined"
+                            value={birthdate}
+                            onChange={handleChange}
                             error={errors.birthdate?.message}
                             helperText={errors.birthdate?.message && "Data de nascimento é obrigatória"}
                             InputProps={{
@@ -127,12 +153,14 @@ function ContactCreate(props) {
                             }}
                         />
                     </FormControl>
-                    <FormControl className="contactCreate__field">
+                    <FormControl className="contactEdit__field">
                         <TextField
                             {...register("phone")}
                             name="phone"
                             label="Telefone"
                             variant="outlined"
+                            value={phone}
+                            onChange={handleChange}
                             error={errors.phone?.message}
                             helperText={errors.phone?.message && "Número de telefone é obrigatório"}
                             InputProps={{
@@ -140,7 +168,22 @@ function ContactCreate(props) {
                             }}
                         />
                     </FormControl>
-                    <FormControl className="contactCreate__field">
+                    <FormControl className="contactEdit__field">
+                        <TextField
+                            {...register("phone2")}
+                            name="phone2"
+                            label="2º Telefone"
+                            variant="outlined"
+                            value={phone2}
+                            onChange={handleChange}
+                            error={errors.phone2?.message}
+                            helperText={errors.phone2?.message && "Número de telefone é obrigatório"}
+                            InputProps={{
+                                inputComponent: PhoneMask
+                            }}
+                        />
+                    </FormControl>
+                    <FormControl className="contactEdit__field">
                         <InputLabel className="MuiInputLabel-outlined">Parentesco</InputLabel>
                         <Select
                             {...register("relative")}
@@ -150,21 +193,21 @@ function ContactCreate(props) {
                             value={relative}
                             onChange={handleChange}
                         >
-                            <MenuItem value={0}>Nenhum</MenuItem>
-                            <MenuItem value={1}>Pai</MenuItem>
-                            <MenuItem value={2}>Mãe</MenuItem>
-                            <MenuItem value={3}>Tio(a)</MenuItem>
-                            <MenuItem value={4}>Irmã(o)</MenuItem>
-                            <MenuItem value={5}>Avós</MenuItem>
-                            <MenuItem value={6}>Outro</MenuItem>
+                            <MenuItem value={"Nenhum"}>Nenhum</MenuItem>
+                            <MenuItem value={"Pai"}>Pai</MenuItem>
+                            <MenuItem value={"Mãe"}>Mãe</MenuItem>
+                            <MenuItem value={"Tio(a)"}>Tio(a)</MenuItem>
+                            <MenuItem value={"Irmã(o)"}>Irmã(o)</MenuItem>
+                            <MenuItem value={"Avós"}>Avós</MenuItem>
+                            <MenuItem value={"Outro"}>Outro</MenuItem>
                         </Select>
 
                     </FormControl>
-                    <Button type="submit" id="submit">Salvar</Button>
+                    <Button type="submit" id="submit" onClick={handleSubmit(onSubmit)}>Salvar</Button>
                 </form>
             </div>
         </div>
     )
 }
 
-export default ContactCreate
+export default ContactEdit

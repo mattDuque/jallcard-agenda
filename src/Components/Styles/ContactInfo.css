@@ -1,0 +1,23 @@
+.contactInfo__container {
+  margin: 20px 60px;
+}
+
+.contactInfo__content {
+  width: fit-content;
+  padding: 15px;
+  border: 1px solid lightgrey;
+  border-radius: 8px;
+}
+.contactInfo__content > h3 {
+  margin-bottom: 20px;
+}
+
+.contactInfo__fields {
+  display: block;
+  padding: 10px 40px;
+}
+
+.contactInfo__fields > h4 {
+  display: inline-block;
+  margin-right: 10px;
+}

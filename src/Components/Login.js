@@ -1,6 +1,4 @@
 import React, { useState } from 'react'
-import AccountCircleIcon from '@material-ui/icons/AccountCircle'
-import Register from './Register'
 import {
     Card, CardContent, Button,
     FormControl, TextField
@@ -11,12 +9,14 @@ import {
     signInWithEmailAndPassword
 } from '../firebase'
 import { useStateValue } from '../StateProvider'
-import { actionTypes } from '../reducer'
+import { actionTypes, initialState } from '../reducer'
+import AccountCircleIcon from '@material-ui/icons/AccountCircle'
+import Register from './Register'
 import './Styles/Login.css'
 
 function Login() {
 
-    const [state, dispatch] = useStateValue()
+    const [state, dispatch] = useStateValue(initialState)
     const [showRegister, setShowRegister] = useState()
     const [email, setEmail] = useState()
     const [password, setPassword] = useState()
@@ -24,10 +24,12 @@ function Login() {
     const signInPopup = () => {
         signInWithPopup(auth, provider)
             .then((result) => {
+
                 dispatch({
                     type: actionTypes.SET_USER,
                     user: result.user
                 })
+
             })
             .catch((error) => {
                 alert(error.message)
@@ -36,7 +38,9 @@ function Login() {
 
     const signInEmail = () => {
         signInWithEmailAndPassword(auth, email, password)
+
             .then((result) => {
+                console.log(result.user.email)
                 dispatch({
                     type: actionTypes.SET_USER,
                     user: result.user

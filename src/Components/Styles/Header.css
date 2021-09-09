@@ -10,6 +10,12 @@
   z-index: 100;
 }
 
+.header > a {
+  display: inherit;
+  align-items: center;
+  text-decoration: none;
+}
+
 .header__logo {
   font-size: 40px !important;
   color: #1a73e8;
@@ -65,10 +71,9 @@
   text-transform: inherit !important;
   background: #5193f1 !important;
   color: white !important;
-  margin: 20px 10px 5px 10px;
+  margin: 0px 10px !important;
 }
 
 .header__buttonText {
-  margin-left: 10px;
   font-size: 1em;
 }
