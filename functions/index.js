@@ -6,7 +6,7 @@ const cors = require('cors')
 
 const app = express();
 const port = process.env.PORT || 9000;
-const dbURL = 'mongodb+srv://admin:qnjT40YlKOOi47Ml@cluster0.cdtbz.mongodb.net/jallcard-agenda?retryWrites=true&w=majority'
+const dbURL = 'mongodb+srv://admin:<senha>.cdtbz.mongodb.net/jallcard-agenda?retryWrites=true&w=majority'
 
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
